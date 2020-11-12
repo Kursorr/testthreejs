@@ -90,16 +90,24 @@ export default {
       return newTexture;
     },
     incrustTextOnPlane () {
-      const matDark = new THREE.MeshBasicMaterial({
+      const decalMaterial = new THREE.MeshPhongMaterial({
+        specular: 0x444444,
         map: this.createCanvasTexture(),
-        color: 0xffffff,
+        normalScale: new THREE.Vector2(1, 1),
+        shininess: 30,
+        transparent: true,
+        depthTest: true,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -10,
+        wireframe: false,
       });
 
       const position = new THREE.Vector3(0, 1, 0);
       const orientation = new THREE.Euler();
       const size = new THREE.Vector3(2, 2, 2);
 
-      const mesh = new THREE.Mesh(new DecalGeometry(this.plane, position, orientation, size), matDark);
+      const mesh = new THREE.Mesh(new DecalGeometry(this.plane, position, orientation, size), decalMaterial);
       mesh.rotateX(-Math.PI / 2);
       this.$refs.scene.add(mesh);
     },
