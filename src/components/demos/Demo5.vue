@@ -1,11 +1,11 @@
 <template>
   <Renderer ref="renderer" antialias orbit-ctrl background="#FFF">
     <Camera :position="{ x: 10, y: 10, z: 10 }" />
-    <Scene background="#000" ref="scene">
+    <Scene background="#FFF" ref="scene">
       <PointLight color="#ff6000" :intensity="3" :position="{ x: 1, y: 29}" />
       <PointLight color="#ff6000" :intensity="3" :position="{ x: -1, y: -29}" />
       <PointLight color="#ff6000" :intensity="3" :position="{ x: 0, y: 40}" />
-      <Plane ref="plane"
+      <!--<Plane ref="plane"
              :position="{ x: 0, y: 0, z: 0 }"
              :scale="{x: 10, y: 10, z: 10}"
              :rotation="{x: -Math.PI / 2, y: 0, z: 0}"
@@ -16,7 +16,7 @@
         <StandardMaterial :displacement-scale="0.1">
           <Texture src="https://troisjs.github.io/trois/textures/Wood_Tiles_002_basecolor.jpg" />
         </StandardMaterial>
-      </Plane>
+      </Plane>-->
     </Scene>
   </Renderer>
 </template>
@@ -33,6 +33,7 @@ export default {
       scene: null,
       renderer: null,
       spaceship: null,
+      plane: null,
       texture: null,
     };
   },
@@ -52,7 +53,36 @@ export default {
       this.$refs.scene.add(object);
       this.addDetailOnShip();
       // this.loadFont();
-      this.anotherTest();
+      this.loadPlane();
+    },
+    loadPlane () {
+      const geometry = new THREE.PlaneGeometry(1, 1, 32);
+      const material = new THREE.MeshBasicMaterial({ color: 0x000, side: THREE.DoubleSide });
+      const plane = new THREE.Mesh(geometry, material);
+      plane.position.x = 0;
+      plane.position.y = 0;
+      plane.position.z = 0;
+      plane.rotation.x = -Math.PI / 2;
+      plane.scale.x = 10;
+      plane.scale.y = 10;
+      plane.scale.z = 10;
+      this.$refs.scene.add(plane);
+      this.plane = plane;
+
+      this.incrustTextOnPlane();
+    },
+    incrustTextOnPlane () {
+      const matDark = new THREE.MeshStandardMaterial({
+        map: this.createCanvasTexture(),
+        color: 0xffffff,
+      });
+
+      const position = new THREE.Vector3(0, 1, 0);
+      const orientation = new THREE.Euler();
+      const size = new THREE.Vector3(10, 10, 10);
+
+      const mesh = new THREE.Mesh(new DecalGeometry(this.plane, position, orientation, size), matDark);
+      this.$refs.scene.add(mesh);
     },
     createCanvasTexture () {
       const text = "Hello World !";
@@ -110,41 +140,6 @@ export default {
 
         this.$refs.scene.add(textMesh);
       }); */
-    },
-    anotherTest () {
-      const plane = new THREE.Mesh(this.$refs.plane.geometry, this.$refs.plane.material);
-
-      console.log(plane);
-      console.log(this.spaceship);
-
-      const textureLoader = new THREE.TextureLoader();
-      const decalDiffuse = textureLoader.load('./docs/decals/decal-diffuse.png');
-      const decalNormal = textureLoader.load('./docs/decals/decal-normal.jpg');
-
-      const decalMaterial = new THREE.MeshPhongMaterial({
-        specular: 0x444444,
-        map: decalDiffuse,
-        normalMap: decalNormal,
-        normalScale: new THREE.Vector2(1, 1),
-        shininess: 30,
-        transparent: true,
-        depthTest: true,
-        depthWrite: false,
-        polygonOffset: true,
-        polygonOffsetFactor: -4,
-        wireframe: false,
-      });
-
-      const position = new THREE.Vector3(0, 1, 0);
-      const orientation = new THREE.Euler();
-      const size = new THREE.Vector3(10, 10, 10);
-
-      const material = decalMaterial.clone();
-      material.color.setHex(Math.random() * 0xffffff);
-
-      const m = new THREE.Mesh(new DecalGeometry(plane, position, orientation, size), material);
-
-      this.$refs.scene.add(m);
     },
     newTexture () {
       // texture
