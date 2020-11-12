@@ -65,7 +65,7 @@ export default {
       plane.position.x = 0;
       plane.position.y = 0;
       plane.position.z = 0;
-      plane.rotation.x = -Math.PI / 2.1;
+      plane.rotation.x = -Math.PI / 2;
       plane.scale.x = 10;
       plane.scale.y = 10;
       plane.scale.z = 10;
@@ -100,6 +100,7 @@ export default {
       const size = new THREE.Vector3(2, 2, 2);
 
       const mesh = new THREE.Mesh(new DecalGeometry(this.plane, position, orientation, size), matDark);
+      mesh.rotateX(-Math.PI / 2);
       this.$refs.scene.add(mesh);
     },
     loadFont () {
