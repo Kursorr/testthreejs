@@ -57,12 +57,15 @@ export default {
     },
     loadPlane () {
       const geometry = new THREE.PlaneGeometry(1, 1, 32);
-      const material = new THREE.MeshBasicMaterial({ color: 0x000, side: THREE.DoubleSide });
+      const material = new THREE.MeshBasicMaterial({
+        color: 0xff0000,
+        side: THREE.DoubleSide,
+      });
       const plane = new THREE.Mesh(geometry, material);
       plane.position.x = 0;
       plane.position.y = 0;
       plane.position.z = 0;
-      plane.rotation.x = -Math.PI / 2;
+      plane.rotation.x = -Math.PI / 2.1;
       plane.scale.x = 10;
       plane.scale.y = 10;
       plane.scale.z = 10;
@@ -70,19 +73,6 @@ export default {
       this.plane = plane;
 
       this.incrustTextOnPlane();
-    },
-    incrustTextOnPlane () {
-      const matDark = new THREE.MeshStandardMaterial({
-        map: this.createCanvasTexture(),
-        color: 0xffffff,
-      });
-
-      const position = new THREE.Vector3(0, 1, 0);
-      const orientation = new THREE.Euler();
-      const size = new THREE.Vector3(10, 10, 10);
-
-      const mesh = new THREE.Mesh(new DecalGeometry(this.plane, position, orientation, size), matDark);
-      this.$refs.scene.add(mesh);
     },
     createCanvasTexture () {
       const text = "Hello World !";
@@ -92,12 +82,25 @@ export default {
       const ctx = thatCanvas.getContext('2d');
       ctx.font = "Bold 45px serif";
       ctx.fillStyle = 'orange';
-      ctx.fillText(text, 50, 50);
+      ctx.fillText(text, 130, 500);
 
       const newTexture = new THREE.CanvasTexture(thatCanvas);
       newTexture.needsUpdate = true;
 
       return newTexture;
+    },
+    incrustTextOnPlane () {
+      const matDark = new THREE.MeshBasicMaterial({
+        map: this.createCanvasTexture(),
+        color: 0xffffff,
+      });
+
+      const position = new THREE.Vector3(0, 1, 0);
+      const orientation = new THREE.Euler();
+      const size = new THREE.Vector3(2, 2, 2);
+
+      const mesh = new THREE.Mesh(new DecalGeometry(this.plane, position, orientation, size), matDark);
+      this.$refs.scene.add(mesh);
     },
     loadFont () {
       const plane = new THREE.Mesh(this.$refs.plane.geometry, this.$refs.plane.material);
