@@ -241,27 +241,22 @@ export default {
     },
     addInteraction () {
       console.log(this.$refs.renderer);
-      window.addEventListener('mousedown', this.onDocumentMouseDown, false);
+      window.addEventListener('pointerdown', this.onDocumentMouseDown, false);
       window.requestAnimationFrame(this.$refs.renderer.three.render);
     },
     onDocumentMouseDown (event) {
-      console.log('tap!:)');
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
 
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-      console.log(this.$refs.camera.camera);
       raycaster.setFromCamera(mouse, this.$refs.camera.camera);
 
       // calculate objects intersecting the picking ray
       const intersects = raycaster.intersectObjects(this.$refs.scene.scene.children, true);
-      console.log(this.$refs.scene.scene.children);
-      console.log(intersects.length);
 
       for (let i = 0; i < intersects.length; i++) {
-        console.log(intersects[i].object);
         intersects[i].object.material.color.set(0xff0000);
       }
 
