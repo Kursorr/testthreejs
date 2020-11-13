@@ -1,6 +1,9 @@
 <template>
-  <Renderer ref="renderer" antialias orbit-ctrl background="#FFF">
-    <Camera :position="{ x: 10, y: 10, z: 10 }" />
+  <Renderer ref="renderer" antialias
+            orbit-ctrl
+            :mouseMove="true"
+            background="#FFF">
+    <Camera :position="{ x: 10, y: 10, z: 10 }" ref="camera"/>
     <Scene background="#FFF" ref="scene">
       <PointLight color="#ff6000" :intensity="3" :position="{ x: 1, y: 29}" />
       <PointLight color="#ff6000" :intensity="3" :position="{ x: -1, y: -29}" />
@@ -26,6 +29,9 @@ import * as THREE from 'three';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry.js';
 
+const group = new THREE.Group();
+const secondGroup = new THREE.Group();
+
 let object;
 export default {
   data () {
@@ -41,7 +47,7 @@ export default {
     loadModel () {
       object.traverse(child => {
         child.position.x = 0;
-        child.position.y = 3;
+        child.position.y = 1;
 
         this.spaceship = child;
 
@@ -54,11 +60,36 @@ export default {
       this.addDetailOnShip();
       // this.loadFont();
       this.loadPlane();
+      this.moveGroup();
+      this.moveSecondGroup();
+      this.addInteraction();
+    },
+    moveGroup () {
+      const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
+      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+
+      const cubeA = new THREE.Mesh(geometry, material);
+      cubeA.position.set(10, 10, 0);
+
+      const cubeB = new THREE.Mesh(geometry, material);
+      cubeB.position.set(-10, -10, 0);
+
+      group.add(cubeA);
+      group.add(cubeB);
+
+      group.position.y = 5;
+
+      this.$refs.scene.add(group);
+    },
+    moveSecondGroup () {
+      secondGroup.position.y = 1;
+
+      this.$refs.scene.add(secondGroup);
     },
     loadPlane () {
-      const geometry = new THREE.PlaneGeometry(1, 1, 32);
+      const geometry = new THREE.SphereGeometry(1, 32, 32);
       const material = new THREE.MeshBasicMaterial({
-        color: 0xff0000,
+        map: new THREE.TextureLoader().load('https://troisjs.github.io/trois/textures/Wood_Tiles_002_basecolor.jpg'),
         side: THREE.DoubleSide,
       });
       const plane = new THREE.Mesh(geometry, material);
@@ -69,8 +100,10 @@ export default {
       plane.scale.x = 10;
       plane.scale.y = 10;
       plane.scale.z = 10;
-      this.$refs.scene.add(plane);
+      // this.$refs.scene.add(plane);
       this.plane = plane;
+
+      secondGroup.add(plane);
 
       this.incrustTextOnPlane();
     },
@@ -109,7 +142,11 @@ export default {
 
       const mesh = new THREE.Mesh(new DecalGeometry(this.plane, position, orientation, size), decalMaterial);
       mesh.rotateX(-Math.PI / 2);
-      this.$refs.scene.add(mesh);
+      mesh.scale.x = 10;
+      mesh.scale.y = 10;
+      mesh.scale.z = 10;
+      secondGroup.add(mesh);
+      // this.$refs.scene.add(mesh);
     },
     loadFont () {
       const plane = new THREE.Mesh(this.$refs.plane.geometry, this.$refs.plane.material);
@@ -197,10 +234,38 @@ export default {
 
       const m = new THREE.Mesh(new DecalGeometry(this.spaceship, position, orientation, size), material);
 
-      m.position.set(0, 6, 0);
+      m.position.set(0, 2, 0);
       m.scale.set(1, 1, 1);
 
       this.$refs.scene.add(m);
+    },
+    addInteraction () {
+      console.log(this.$refs.renderer);
+      window.addEventListener('mousedown', this.onDocumentMouseDown, false);
+      window.requestAnimationFrame(this.$refs.renderer.three.render);
+    },
+    onDocumentMouseDown (event) {
+      console.log('tap!:)');
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      console.log(this.$refs.camera.camera);
+      raycaster.setFromCamera(mouse, this.$refs.camera.camera);
+
+      // calculate objects intersecting the picking ray
+      const intersects = raycaster.intersectObjects(this.$refs.scene.scene.children, true);
+      console.log(this.$refs.scene.scene.children);
+      console.log(intersects.length);
+
+      for (let i = 0; i < intersects.length; i++) {
+        console.log(intersects[i].object);
+        intersects[i].object.material.color.set(0xff0000);
+      }
+
+      this.$refs.renderer.three.render(this.$refs.scene, this.$refs.camera);
     },
   },
   mounted () {
