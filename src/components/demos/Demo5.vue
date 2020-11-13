@@ -240,7 +240,6 @@ export default {
       this.$refs.scene.add(m);
     },
     addInteraction () {
-      console.log(this.$refs.renderer);
       window.addEventListener('pointerdown', this.onDocumentMouseDown, false);
       window.requestAnimationFrame(this.$refs.renderer.three.render);
     },
