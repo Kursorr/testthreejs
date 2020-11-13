@@ -13,6 +13,7 @@ import Demo2 from './components/demos/Demo2.vue';
 import Demo3 from './components/demos/Demo3.vue';
 import Demo4 from './components/demos/Demo4.vue';
 import Demo5 from './components/demos/Demo5.vue';
+import Demo6 from './components/demos/Demo6.vue';
 import Slider1 from './components/demos/Slider1.vue';
 import Slider2 from './components/demos/Slider2.vue';
 import Textures from './components/demos/Textures.vue';
@@ -20,12 +21,12 @@ import Textures from './components/demos/Textures.vue';
 export default {
   name: 'App',
   components: {
-    Demo1, Demo2, Demo3, Demo4, Demo5, Slider1, Slider2, Textures,
+    Demo1, Demo2, Demo3, Demo4, Demo5, Demo6, Slider1, Slider2, Textures,
   },
   data() {
     return {
-      tests: ['Demo1', 'Demo2', 'Demo3', 'Demo4', 'Demo5', 'Textures', 'Slider1', 'Slider2'],
-      test: 'Demo5',
+      tests: ['Demo1', 'Demo2', 'Demo3', 'Demo4', 'Demo5', 'Demo6', 'Textures', 'Slider1', 'Slider2'],
+      test: 'Demo6',
     };
   },
 };
