@@ -1,5 +1,6 @@
 <template>
-  <Renderer ref="renderer" antialias
+  <Renderer ref="renderer"
+            antialias
             orbit-ctrl
             :mouseMove="true"
             background="#FFF">
@@ -87,7 +88,7 @@ export default {
       this.$refs.scene.add(secondGroup);
     },
     loadPlane () {
-      const geometry = new THREE.SphereGeometry(1, 32, 32);
+      const geometry = new THREE.SphereGeometry(1, 100, 100);
       const material = new THREE.MeshBasicMaterial({
         map: new THREE.TextureLoader().load('https://troisjs.github.io/trois/textures/Wood_Tiles_002_basecolor.jpg'),
         side: THREE.DoubleSide,
