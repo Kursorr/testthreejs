@@ -50,7 +50,6 @@ export default {
       secondLight.position.set(0, 0, 25);
       this.$refs.scene.add(secondLight);
 
-      this.renderer = new THREE.WebGLRenderer({ antialias: true });
       this.renderer.setClearColor("#e5e5e5");
       this.renderer.setSize(window.innerWidth, window.innerHeight);
     },
@@ -79,7 +78,7 @@ export default {
     },
   },
   mounted () {
-    this.renderer = this.$refs.renderer;
+    this.renderer = this.$refs.renderer.three.renderer;
     this.init();
     this.addInteraction();
   },
