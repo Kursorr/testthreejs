@@ -9,7 +9,7 @@
             :far="1000"
             ref="camera"/>
     <Scene ref="scene">
-      <AmbientLight color="#ffffff" :intensity="1"/>
+      <AmbientLight color="#ffffff" :intensity="2"/>
     </Scene>
   </Renderer>
 </template>
@@ -32,8 +32,12 @@ export default {
   },
   methods: {
     async init () {
-      await this.loadShirt();
-      this.incrustTextOnShirt();
+      // await this.loadShirt();
+      const canvas = document.getElementsByTagName('canvas');
+      console.log(canvas);
+      canvas[0].setAttribute('id', 'test');
+
+      this.createCanvas();
     },
     async loadShirt () {
       const loader = new GLTFLoader();
@@ -42,7 +46,96 @@ export default {
       this.scene.add(gltf.scene);
       this.shirt = gltf.scene.children[1];
     },
-    incrustTextOnShirt () {
+    createCanvas () {
+      console.log(document.getElementsByTagName('canvas'));
+
+      const canvasTexture = new THREE.CanvasTexture(test);
+      canvasTexture.wrapS = THREE.RepeatWrapping;
+      canvasTexture.wrapT = THREE.RepeatWrapping;
+      canvasTexture.repeat.set(2, 2);
+
+      const geometry = new THREE.PlaneGeometry(10, 10, 20, 20);
+      geometry.vertices.forEach(v => {
+        v.z = Math.cos(v.x) * Math.sin(-v.y * 0.5) * 0.5;
+      });
+      geometry.computeFaceNormals();
+      geometry.computeVertexNormals();
+
+      const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
+        map: canvasTexture,
+        metalness: 0.25,
+        roughness: 0.25,
+      }));
+
+      const testCanvas = new fabric.Canvas('test', {
+        backgroundColor: 'white',
+      });
+
+      console.log(testCanvas);
+
+      testCanvas.on("after:render", function() {
+        mesh.material.map.needsUpdate = true;
+      });
+
+      const rect = new fabric.Rect({
+        width: 50,
+        height: 50,
+        left: 0,
+        top: 128,
+        stroke: '#aaf',
+        strokeWidth: 5,
+        fill: '#faa',
+        selectable: false,
+        originX: 'center',
+        originY: 'center',
+      });
+
+      testCanvas.add(rect);
+
+      const text = new fabric.IText('Three.js\n+\nFaBric.js', {
+        fontSize: 40,
+        textAlign: 'center',
+        fontWeight: 'bold',
+        left: 128,
+        top: 128,
+        angle: 30,
+        originX: 'center',
+        originY: 'center',
+        shadow: 'blue -5px 6px 5px',
+        styles: {
+          0: {
+            0: {
+              fontSize: 60,
+              fontFamily: 'Impact',
+              fontWeight: 'normal',
+              fill: 'orange',
+            },
+          },
+          1: {
+            0: {
+              fill: "blue",
+            },
+          },
+          2: {
+            0: {
+              textBackgroundColor: 'red',
+            },
+            2: {
+              fill: 'fuchsia',
+              stroke: 'orange',
+              strokeWidth: 1,
+            },
+          },
+        },
+      });
+      text.setSelectionStyles({
+        fontStyle: 'italic',
+        fill: '',
+        stroke: 'red',
+        strokeWidth: 2,
+      }, 1, 5);
+      testCanvas.add(text);
+      testCanvas.setActiveObject(text);
     },
   },
   mounted () {
