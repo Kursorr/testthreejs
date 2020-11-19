@@ -9,7 +9,8 @@
             :far="1000"
             ref="camera"/>
     <Scene ref="scene">
-      <AmbientLight color="#ffffff" :intensity="2"/>
+      <AmbientLight color="#ffffff" :intensity="1"/>
+      <canvas id="cnvs" height="256" width="256"></canvas>
     </Scene>
   </Renderer>
 </template>
@@ -33,10 +34,6 @@ export default {
   methods: {
     async init () {
       // await this.loadShirt();
-      const canvas = document.getElementsByTagName('canvas');
-      console.log(canvas);
-      canvas[0].setAttribute('id', 'test');
-
       this.createCanvas();
     },
     async loadShirt () {
@@ -47,9 +44,7 @@ export default {
       this.shirt = gltf.scene.children[1];
     },
     createCanvas () {
-      console.log(document.getElementsByTagName('canvas'));
-
-      const canvasTexture = new THREE.CanvasTexture(test);
+      const canvasTexture = new THREE.CanvasTexture(cnvs);
       canvasTexture.wrapS = THREE.RepeatWrapping;
       canvasTexture.wrapT = THREE.RepeatWrapping;
       canvasTexture.repeat.set(2, 2);
@@ -67,11 +62,12 @@ export default {
         roughness: 0.25,
       }));
 
-      const testCanvas = new fabric.Canvas('test', {
+      this.scene.add(mesh);
+      // the problem is here because he wants an ID
+      // Cannot read property 'clearRect' of null
+      const testCanvas = new fabric.Canvas('cnvs', {
         backgroundColor: 'white',
       });
-
-      console.log(testCanvas);
 
       testCanvas.on("after:render", function() {
         mesh.material.map.needsUpdate = true;
