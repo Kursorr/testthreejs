@@ -44,10 +44,10 @@ export default {
       this.shirt = gltf.scene.children[1];
     },
     createCanvas () {
-      const canvasTexture = new THREE.CanvasTexture(cnvs);
-      canvasTexture.wrapS = THREE.MirroredRepeatWrapping;
-      canvasTexture.wrapT = THREE.MirroredRepeatWrapping;
+      const canvasTexture = new THREE.CanvasTexture(cnvs, THREE.UVMapping, THREE.RepeatWrapping, THREE.RepeatWrapping);
       canvasTexture.repeat.set(1, 1);
+
+      console.log(this.shirt.children[0].geometry);
 
       const mesh = new THREE.Mesh(this.shirt.children[0].geometry, new THREE.MeshPhongMaterial({
         map: canvasTexture,
@@ -62,12 +62,11 @@ export default {
       mesh.rotation.x = 1.5707964611537577;
       mesh.rotation.y = 0;
       mesh.rotation.z = -0;
-      mesh.scale.x = 1;
-      mesh.scale.y = 1;
-      mesh.scale.z = 1;
+      mesh.scale.x = 0.1;
+      mesh.scale.y = 0.1;
+      mesh.scale.z = 0.1;
       this.scene.add(mesh);
-      // the problem is here because he wants an ID
-      // Cannot read property 'clearRect' of null
+
       const testCanvas = new fabric.Canvas('cnvs', {
         backgroundColor: 'white',
         transparent: false,
@@ -80,21 +79,6 @@ export default {
       testCanvas.on("after:render", function() {
         mesh.material.map.needsUpdate = true;
       });
-
-      const rect = new fabric.Rect({
-        width: 50,
-        height: 50,
-        left: 0,
-        top: 128,
-        stroke: '#aaf',
-        strokeWidth: 5,
-        fill: '#faa',
-        selectable: false,
-        originX: 'center',
-        originY: 'center',
-      });
-
-      testCanvas.add(rect);
 
       const text = new fabric.IText('Three.js\n+\nFaBric.js', {
         fontSize: 40,
