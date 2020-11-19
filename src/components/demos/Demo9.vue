@@ -9,7 +9,7 @@
             :far="1000"
             ref="camera"/>
     <Scene ref="scene">
-      <AmbientLight color="#ffffff" :intensity="1"/>
+      <AmbientLight color="#ffffff" :intensity="0.5"/>
       <canvas id="cnvs" height="256" width="256"></canvas>
     </Scene>
   </Renderer>
@@ -33,7 +33,7 @@ export default {
   },
   methods: {
     async init () {
-      // await this.loadShirt();
+      await this.loadShirt();
       this.createCanvas();
     },
     async loadShirt () {
@@ -45,28 +45,36 @@ export default {
     },
     createCanvas () {
       const canvasTexture = new THREE.CanvasTexture(cnvs);
-      canvasTexture.wrapS = THREE.RepeatWrapping;
-      canvasTexture.wrapT = THREE.RepeatWrapping;
-      canvasTexture.repeat.set(2, 2);
+      canvasTexture.wrapS = THREE.MirroredRepeatWrapping;
+      canvasTexture.wrapT = THREE.MirroredRepeatWrapping;
+      canvasTexture.repeat.set(1, 1);
 
-      const geometry = new THREE.PlaneGeometry(10, 10, 20, 20);
-      geometry.vertices.forEach(v => {
-        v.z = Math.cos(v.x) * Math.sin(-v.y * 0.5) * 0.5;
-      });
-      geometry.computeFaceNormals();
-      geometry.computeVertexNormals();
-
-      const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial({
+      const mesh = new THREE.Mesh(this.shirt.children[0].geometry, new THREE.MeshPhongMaterial({
         map: canvasTexture,
-        metalness: 0.25,
-        roughness: 0.25,
+        transparent: false,
+        depthTest: true,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -14,
+        wireframe: false,
       }));
 
+      mesh.rotation.x = 1.5707964611537577;
+      mesh.rotation.y = 0;
+      mesh.rotation.z = -0;
+      mesh.scale.x = 1;
+      mesh.scale.y = 1;
+      mesh.scale.z = 1;
       this.scene.add(mesh);
       // the problem is here because he wants an ID
       // Cannot read property 'clearRect' of null
       const testCanvas = new fabric.Canvas('cnvs', {
         backgroundColor: 'white',
+        transparent: false,
+        depthTest: false,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -14,
       });
 
       testCanvas.on("after:render", function() {
